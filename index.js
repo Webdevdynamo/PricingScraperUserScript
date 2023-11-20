@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name         PriceScraper
 // @namespace    https://github.com/Webdevdynamo/
-// @downloadURL  file://E:\CodeProjects\PricingScraperUserScript\index.js
-// @updateURL      file://E:\CodeProjects\PricingScraperUserScript\index.js
-// @version      0.0.1
+// @downloadURL  https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
+// @updateURL      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
+// @version      0.0.2
 // @description  PriceScraper
-// @author       Unknown
+// @author       Webdevdynamo
 // @match      https://www.hotelsigns.com/*
 // @match      https://hotelsigns.com/*
 // @require       http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
-// @require      file://E:\CodeProjects\CBPlus\cbplus_2\index.js
+// @require      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_setValue
