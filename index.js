@@ -26,6 +26,10 @@
 
 const globals = {};
 
+const date = new Date();
+
+let currentUrl = window.location.pathname.split("/");
+currentUrl = "https://www.hotelsigns.com/" + currentUrl[1] + "/";
 //GM_setValue("master_products",null);
 
 if(jQuery(".searchResultsControls").length === 0) {
@@ -33,8 +37,7 @@ if(jQuery(".searchResultsControls").length === 0) {
     return false;
 }
 
-globals.master_products = GM_getValue("master_products");
-
+let master_products = GM_getValue("master_products");
 
 if(typeof master_products == "undefined"){
     globals.master_products = {};
@@ -42,7 +45,6 @@ if(typeof master_products == "undefined"){
     globals.master_products = JSON.parse(master_products);
 }
 
-console.log(globals.master_products);
 
 function getProductId(product){
     let id = product.attr("id").replace("product_content_","");
@@ -72,20 +74,84 @@ function getProductDetails(product){
     let dimensions = detail_array[2].match(regex);
     product_details.height = dimensions[1];
     product_details.width = dimensions[2];
+    product_details.page_link = currentUrl + details.attr("href");
 
     return product_details;
 }
 
-function convertProductsToCsv(){
-    const items = json3.items
-    const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
-    const header = Object.keys(items[0])
-    const csv = [
-    header.join(','), // header row first
-    ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
-    ].join('\r\n')
+function convertToCSV(products) {
+    let objArray = [];
+    let columns = [];
+    let j = 0;
+    let str = '';
 
-    console.log(csv)
+    for (const key in products) {
+        let product = products[key];
+        if(j==0){
+            for (const key2 in product) {
+                columns.push(key2);
+            }
+        }
+        j = j + 1;
+        objArray.push(product);
+    }
+    console.log("Product Count: "+objArray.length);
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+
+    var line = '';
+    for (var i = 0; i < columns.length; i++) {
+        if (line != '') line += ','
+
+        line += columns[i];
+    }
+    str += line + '\r\n';
+
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+        for (var index in array[i]) {
+            if (line != '') line += ','
+
+            line += array[i][index];
+        }
+
+        str += line + '\r\n';
+    }
+    return str;
+}
+
+function exportCSVFile(products, fileTitle, download) {
+    var csv = convertToCSV(products);
+    if(download == true){
+        var exportedFilenmae = fileTitle + '.csv' || 'export.csv';
+
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, exportedFilenmae);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", exportedFilenmae);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
+}
+
+function getDate(){
+
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+
+    // This arrangement can be altered based on how we want the date's format to appear.
+    let currentDate = `${year}-${month}-${day}`;
+    return currentDate;
 }
 
 function getProducts(){
@@ -98,18 +164,29 @@ function getProducts(){
         let details = getProductDetails(product);
 
         product_obj.id = productId;
-        product_obj.thumb_url = thumb_url;
         product_obj.collection_name = collection_name;
         for (const key in details) {
             let _details = details[key];
             product_obj[key] = _details;
         }
-        console.log(productId);
+        product_obj.thumb_url = thumb_url;
+        product_obj.last_updated = getDate();
+        console.log(product_obj);
         globals.master_products[productId] = product_obj;
     });
-    console.log(globals.master_products);
+    exportCSVFile(globals.master_products, "SIGNS", false);
+    GM_setValue("master_products", JSON.stringify(globals.master_products));
+}
+
+function downloadCSV(){
+    exportCSVFile(globals.master_products, "SIGNS", true);
+}
+function clearSigns(){
+    globals.master_products = {};
     GM_setValue("master_products", JSON.stringify(globals.master_products));
 }
 
 console.log("Scrapper Running"); 
+clearSigns();
 getProducts();
+console.log(globals.master_products);
