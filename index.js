@@ -3,7 +3,7 @@
 // @namespace    https://github.com/Webdevdynamo/
 // @downloadURL  https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @updateURL      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
-// @version      1.1.0
+// @version      1.2.0
 // @description  PriceScraper
 // @author       Webdevdynamo
 // @match      https://www.hotelsigns.com/*
@@ -23,7 +23,7 @@
 // GM_addStyle (GM_getResourceText("jqCSS"));
 // GM_addStyle (GM_getResourceText("cbCSS"));
 
-const globals = {};
+globals = {};
 
 const date = new Date();
 
