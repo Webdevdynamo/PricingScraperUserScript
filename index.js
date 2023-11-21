@@ -3,7 +3,7 @@
 // @namespace    https://github.com/Webdevdynamo/
 // @downloadURL  https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @updateURL      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
-// @version      1.2.0
+// @version      1.3.0
 // @description  PriceScraper
 // @author       Webdevdynamo
 // @match      https://www.hotelsigns.com/*
@@ -22,8 +22,13 @@
 // GM_addStyle (GM_getResourceText("vjCSS"));
 // GM_addStyle (GM_getResourceText("jqCSS"));
 // GM_addStyle (GM_getResourceText("cbCSS"));
+const _this = this;
 
-globals = {};
+if(typeof this.scraper_globals == "undefined"){
+    this.scraper_globals = {};
+}else{
+    this.scraper_globals = {};
+}
 
 const date = new Date();
 
@@ -39,9 +44,9 @@ if(jQuery(".searchResultsControls").length === 0) {
 let master_products = GM_getValue("master_products");
 
 if(typeof master_products == "undefined"){
-    globals.master_products = {};
+    this.scraper_globals.master_products = {};
 }else{
-    globals.master_products = JSON.parse(master_products);
+    this.scraper_globals.master_products = JSON.parse(master_products);
 }
 
 
@@ -172,10 +177,10 @@ function getProducts(){
         product_obj.thumb_url = thumb_url;
         product_obj.last_updated = getDate();
         //console.log(product_obj);
-        globals.master_products[productId] = product_obj;
+        _this.scraper_globals.master_products[productId] = product_obj;
     });
-    exportCSVFile(globals.master_products, "SIGNS", false);
-    GM_setValue("master_products", JSON.stringify(globals.master_products));
+    exportCSVFile(_this.scraper_globals.master_products, "SIGNS", false);
+    GM_setValue("master_products", JSON.stringify(_this.scraper_globals.master_products));
 }
 
 function downloadCSV(){
@@ -184,12 +189,12 @@ function downloadCSV(){
         alert("No items in list.");
         return false;
     }
-    exportCSVFile(globals.master_products, "Scrapped Products", true);
+    exportCSVFile(_this.scraper_globals.master_products, "Scrapped Products", true);
 }
 function clearSigns(){
-    globals.master_products = {};
+    _this.scraper_globals.master_products = {};
     jQuery("#scraper_count").text("0");
-    GM_setValue("master_products", JSON.stringify(globals.master_products));
+    GM_setValue("master_products", JSON.stringify(_this.scraper_globals.master_products));
 }
 
 function createButtons(){
@@ -237,4 +242,4 @@ function createButtons(){
 console.log("Scraper Running"); 
 createButtons();
 getProducts();
-//console.log(globals.master_products);
+//console.log(this.scraper_globals.master_products);
