@@ -3,13 +3,12 @@
 // @namespace    https://github.com/Webdevdynamo/
 // @downloadURL  https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @updateURL      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
-// @version      1.0.0
+// @version      1.1.0
 // @description  PriceScraper
 // @author       Webdevdynamo
 // @match      https://www.hotelsigns.com/*
 // @match      https://hotelsigns.com/*
 // @require       http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
-// @require      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_setValue
