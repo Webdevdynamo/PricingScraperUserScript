@@ -3,7 +3,7 @@
 // @namespace    https://github.com/Webdevdynamo/
 // @downloadURL  https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
 // @updateURL      https://raw.githubusercontent.com/Webdevdynamo/PricingScraperUserScript/main/index.js
-// @version      0.0.2
+// @version      1.0.0
 // @description  PriceScraper
 // @author       Webdevdynamo
 // @match      https://www.hotelsigns.com/*
@@ -95,7 +95,8 @@ function convertToCSV(products) {
         j = j + 1;
         objArray.push(product);
     }
-    console.log("Product Count: "+objArray.length);
+    //console.log("Product Count: "+objArray.length);
+    jQuery("#scraper_count").text(objArray.length);
     var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
 
     var line = '';
@@ -171,7 +172,7 @@ function getProducts(){
         }
         product_obj.thumb_url = thumb_url;
         product_obj.last_updated = getDate();
-        console.log(product_obj);
+        //console.log(product_obj);
         globals.master_products[productId] = product_obj;
     });
     exportCSVFile(globals.master_products, "SIGNS", false);
@@ -179,14 +180,62 @@ function getProducts(){
 }
 
 function downloadCSV(){
-    exportCSVFile(globals.master_products, "SIGNS", true);
+    let count = Number(jQuery("#scraper_count").text());
+    if(count < 1){
+        alert("No items in list.");
+        return false;
+    }
+    exportCSVFile(globals.master_products, "Scrapped Products", true);
 }
 function clearSigns(){
     globals.master_products = {};
+    jQuery("#scraper_count").text("0");
     GM_setValue("master_products", JSON.stringify(globals.master_products));
 }
 
-console.log("Scrapper Running"); 
-clearSigns();
+function createButtons(){
+    let buttonHolder = jQuery("<div>")
+                        .attr("id","scaper_button_holder")
+                        .css("position","fixed")
+                        .css("left","0px")
+                        .css("bottom","50px")
+                        .css("background-color","red")
+                        .css("z-index","10000")
+                        .css("padding","5px")
+                        .css("border-radius","0px 5px 5px 0px")
+                        .css("box-shadow","#4b4b4b 0px 2px 3px")
+                        .css("color","#fff")
+                        .html("Product(s) Scraped: <span id='scraper_count'>0</span>");
+                        
+    let downloadCSVButton = jQuery("<button>")
+                            .attr("id","csv_download_button")
+                            .css("display","block")
+                            .css("margin-top","5px")
+                            .css("cursor","pointer")
+                            .html("Download CSV");
+
+                                            
+    let clearProducts = jQuery("<button>")
+                            .attr("id","clear_product_list_button")
+                            .css("display","block")
+                            .css("margin-top","5px")
+                            .css("cursor","pointer")
+                            .html("Clear Product List");
+      
+    downloadCSVButton.appendTo(buttonHolder);
+    clearProducts.appendTo(buttonHolder);
+    buttonHolder.appendTo("body");
+
+    clearProducts.bind("click",function(){
+        clearSigns();
+    });
+
+    downloadCSVButton.bind("click",function(){
+        downloadCSV();
+    });
+}
+
+console.log("Scraper Running"); 
+createButtons();
 getProducts();
-console.log(globals.master_products);
+//console.log(globals.master_products);
